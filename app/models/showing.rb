@@ -109,8 +109,15 @@ class Showing < ApplicationRecord
         col_off && row_off
     end
 
+    #now a function to determine the number of connections
+    def number_of_connections(array_of_seats)
+        
+    end
+
     #now the function to run through all the permutations
-    def seats_connect
+    def seat_permutations(number_of_seats)
+         
+    end
 
     
 end
