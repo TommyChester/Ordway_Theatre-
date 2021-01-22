@@ -26,5 +26,12 @@ class Showing < ApplicationRecord
     #trying make an MVP that will likely never be built on top of so I am 
     #going to do the logic in the model. 
 
+    #okay just a clear defining of the open seats
+    def availableSeats
+        jsonChunk["seats"].map{|x| [x[1]["row"],x[1]["column"]]}
+    end
+
+
+
     
 end
