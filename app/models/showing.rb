@@ -51,8 +51,6 @@ class Showing < ApplicationRecord
     # and the first third being .25 points and back third being .8 points accurately
     # Describes the real relationship and not a semi-continous equation. 
     def point_per_movie_seat_row(seat_row)
-        puts venueRows
-        puts seat_row / venueRows
         if seat_row.to_f / venueRows  < 0.333
             return 0.25
         elsif seat_row.to_f / venueRows < 0.666
@@ -62,6 +60,31 @@ class Showing < ApplicationRecord
         end
     end
 
-    #defining column values will be the same for both the 
+    #defining column values will be the same for all types of showing. My thoughts
+    # that the very middle 10% are fairly negligible in difference, the next 20%
+    # (so total the middle 50%)on each side drop in desireabiliy linearly
+    # the last side 25% drop exponentially.  
+    def point_column(seat_column)
+        #shift to have middle seats at or around zero, use abs to fold over
+        #the origin make both sides similar
+        shift_amount = venueColumns / 2.0
+        seat_num = (seat_column.to_f - shift_amount).abs
+        seat_percentage = seat_num / shift_amount
+        if seat_percentage < 0.1
+            return 1.0
+        elsif seat_percentage <0.5
+            return 1.0 - seat_percentage
+        else
+            return 1.0 - seat_percentage**(0.5)
+        end
+    end
 
+    #Now define total point per seat (gave weighting option for forward importance), I 
+    #might use in the future. 
+    def seat_point(row, column,weight_non_movies=1)
+        (is_movie? ? point_per_movie_seat_row(row) : (weight_non_movies)*point_per_non_movie_seat_row(row)) + point_column(column)
+    end
+
+    #at this point I have all the logic for a single ticket. Now it gets 
+    # interesting, multiple tickets. 
 end
