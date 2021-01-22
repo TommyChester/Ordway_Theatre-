@@ -36,4 +36,32 @@ class Showing < ApplicationRecord
         self.type_of_show.downcase == "movie" ? true : false 
     end
 
+    #For a non-movie showing the distribution would be an exponential decay 
+    #for how far back is acceptable. To start with I am going to use the 
+    #the basic equation e^-x, where x is actually 1 divided by the 
+    # total number of rows and multiplied by the actual row number. To make sense of 
+    # that look at https://en.wikipedia.org/wiki/Exponential_decay where a 
+    #0<=x<5 with a e^-x. 
+    def point_per_non_movie_seat_row(seat_row)
+        Math.exp(-((1.0/venueRows)*(seat_row-1))) 
+    end
+
+    #I was going to use a Poisson distribution but after thinking more about it 
+    #I think that a simpiler distrobution of the middle third of the theatre = 1
+    # and the first third being .25 points and back third being .8 points accurately
+    # Describes the real relationship and not a semi-continous equation. 
+    def point_per_movie_seat_row(seat_row)
+        puts venueRows
+        puts seat_row / venueRows
+        if seat_row.to_f / venueRows  < 0.333
+            return 0.25
+        elsif seat_row.to_f / venueRows < 0.666
+            return 1.0
+        else
+            return 0.8
+        end
+    end
+
+    #defining column values will be the same for both the 
+
 end
