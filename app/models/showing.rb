@@ -86,5 +86,31 @@ class Showing < ApplicationRecord
     end
 
     #at this point I have all the logic for a single ticket. Now it gets 
-    # interesting, multiple tickets. 
+    # interesting, multiple tickets. The first thing I am going to do
+    # is say given a set of seats how many connections are their divided by 
+    # the number of seats So for 1 ticket it would always be 1, two tickets 
+    # can be 0,1. Three can have 0,1,2,3 (I am counting diagonal as connection)
+    # four can have 0-6. I believe that it is summation of n choose k from 1 to n
+
+    # first I need to say to to seats touch, var input is array [row,column]
+    def seats_touch?(seat_a, seat_b)
+        #I actually need to redefine the letters to numbers
+        # I believe I will only use here so I wont hang on it 
+        def row_to_num(input)
+            #simply create an array of the alphabet but up to the 
+            # double alphabet for more than 26. Then just index the row.
+            ("a".."zz").to_a.index(input[0])
+        end
+        
+        #check to see if column number are <= 1 different from eachother
+        col_off = (seat_a[1]-seat_b[1]).abs <= 1 
+        row_off = (row_to_num(seat_a[0])-row_to_num(seat_b[0])).abs <= 1
+        puts col_off 
+        col_off && row_off
+    end
+
+    #now the function to run through all the permutations
+    def seats_connect
+
+    
 end
