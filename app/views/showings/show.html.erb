@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @showing.name %>
+</p>
+
+<p>
+  <strong>Type of show:</strong>
+  <%= @showing.type_of_show %>
+</p>
+
+<p>
+  <strong>Body:</strong>
+  <%= @showing.body %>
+</p>
+
+<%= link_to 'Edit', edit_showing_path(@showing) %> |
+<%= link_to 'Back', showings_path %>
