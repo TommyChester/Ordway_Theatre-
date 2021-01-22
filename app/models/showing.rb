@@ -6,7 +6,6 @@ class Showing < ApplicationRecord
         JSON.parse self.body
     end
 
-    
     def venueLayout
         jsonChunk["venue"]["layout"]
     end
@@ -31,7 +30,10 @@ class Showing < ApplicationRecord
         jsonChunk["seats"].map{|x| [x[1]["row"],x[1]["column"]]}
     end
 
+    #so no I am thinking it would best to figure out how to point a seat. 
+    #I am going write out some my logic in the readme 
+    def is_movie?
+        self.type_of_show.downcase == "movie" ? true : false 
+    end
 
-
-    
 end
