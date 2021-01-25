@@ -11,9 +11,11 @@
 </p>
 
 <p>
-  <strong>Body:</strong>
-  <%= @showing.body %>
+  <strong>Available Seats:</strong>
+  <%= @showing.availableSeats%>
 </p>
+
+<%=select_tag("Tickets", options_for_select([0,1,2,3,4,10]))%>
 
 <%= link_to 'Edit', edit_showing_path(@showing) %> |
 <%= link_to 'Back', showings_path %>

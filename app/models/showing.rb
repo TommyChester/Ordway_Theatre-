@@ -112,6 +112,7 @@ class Showing < ApplicationRecord
     end
 
     
+    
     #define which seats actually touch eachother now that we know open seats
     #and if can run a method to see if they touch. 
     def number_of_connections(array_of_seats)
