@@ -29,7 +29,7 @@ class Showing < ApplicationRecord
 
     #okay just a clear defining of the open seats
     def availableSeats
-        jsonChunk["seats"].map{|x| [x[1]["row"],x[1]["column"]]}
+        jsonChunk["seats"]
     end
 
     #so no I am thinking it would best to figure out how to point a seat. 
@@ -45,7 +45,7 @@ class Showing < ApplicationRecord
     # that look at https://en.wikipedia.org/wiki/Exponential_decay where a 
     #0<=x<5 with a e^-x. 
     def point_per_non_movie_seat_row(seat_row)
-        Math.exp(-((1.0/venueRows)*(seat_row-1))) 
+        Math.exp(-((1.0/venueRows)*(seat_row.to_f+1))) 
     end
 
     #I was going to use a Poisson distribution but after thinking more about it 
@@ -83,11 +83,29 @@ class Showing < ApplicationRecord
 
     #Now define total point per seat (gave weighting option for forward importance), I 
     #might use in the future. 
-    def seat_point(row, column,weight_non_movies=1)
-        (is_movie? ? point_per_movie_seat_row(row) : (weight_non_movies)*point_per_non_movie_seat_row(row)) + point_column(column)
+    def seat_point(row_num,col_num,weight_non_movies=1)
+        (is_movie? ? point_per_movie_seat_row(row_num) + point_column(col_num) : (weight_non_movies)*point_per_non_movie_seat_row(row_num)) + point_column(col_num)
     end
 
-    #at this point I have all the logic for a single ticket. Now it gets 
+    # now I make chart that holds the values for each seat. returns [row, col, points]
+    def seat_point_chart
+        hold=[]
+        availableSeats.to_a.each do |i| 
+            row=i[1]["row"]
+            row_num=row_to_num(row)
+            col=i[1]["column"]
+            sp=[row,col,seat_point(row_num,col)]
+            hold.push(sp)
+        end
+        return hold 
+    end
+
+    # helpter for converting row alphabet to number
+    def row_to_num(input)
+        ("a".."zz").to_a.index(input[0])
+    end
+
+    #at this point I have all the logic for a single ticket (essentiall). Now it gets 
     # interesting, multiple tickets. The first thing I am going to do
     # is say given a set of seats how many connections are their divided by 
     # the number of seats So for 1 ticket it would always be 1, two tickets 
@@ -96,28 +114,76 @@ class Showing < ApplicationRecord
 
     # first I need to say to to seats touch, var input is array [row,column]
     def seats_touch?(seat_a, seat_b)
-        #I actually need to redefine the letters to numbers
-        # I believe I will only use here so I wont hang on it 
-        def row_to_num(input)
-            #simply create an array of the alphabet but up to the 
-            # double alphabet for more than 26. Then just index the row.
-            ("a".."zz").to_a.index(input[0])
-        end
-        
+        #Redefine letters to numbers
+        row_a= row_to_num(seat_a[0])
+        row_b= row_to_num(seat_b[0])
         #check to see if column number are <= 1 different from eachother
         col_off = (seat_a[1]-seat_b[1]).abs <= 1 
-        row_off = (row_to_num(seat_a[0])-row_to_num(seat_b[0])).abs <= 1
-        puts col_off 
+        row_off = (row_a-row_b).abs <= 1
         col_off && row_off
     end
 
     
     
-    #combinations of available seats by seat number
-    def seat_combinations_by_val(input_num)
-        return null unless input_num <= availableSeats.length
-
+    #Combinations of available seats by seat number
+    def seat_combinations(input_num)
+        #dont allow for combination numbers above number of avail seats
+        return nil unless input_num < availableSeats.length + 1
+        seat_point_chart.combination(input_num).to_a
+    
     end
 
+    #input one of seat_combinations subsets
+    def how_many_connections(input_set)
+        #counter
+        hold = 0
+        #n choose 2 in double loop format (efficient for choose 2)
+        for i in 0..input_set.length-1
+            for j in i+1..input_set.length-1
+                seat_a = [input_set[i][0],input_set[i][1]]
+                seat_b= [input_set[j][0],input_set[j][1]]
+                if seats_touch?(seat_a, seat_b)
+                    hold += 1
+                end
+            end
+        end
+        hold.to_f / input_set.length
+    end
+
+    #total Value of an input set I am crudely saying is the sum of the
+    #of the points per seat multiplied by the number of seated connections
+    # divided by the number of total seats
+    def total_value_of_set(input_set)
+        pps = input_set.sum{|x| x[2]}
+        cv= how_many_connections(input_set)
+        cv*pps
+    end
     
+    # Find which one of the all combinations per ticket number 
+    def best_seat_combination(input_num)
+        all_sets = seat_combinations(input_num)
+        hold_set = []
+        hold_val = 0
+        all_sets.each do |i|
+            tv = total_value_of_set(i)
+            if  tv > hold_val
+                hold_set = i
+                hold_val= tv
+            end
+        end
+        # just add the push to show the total value (might want it)
+        hold_set.push(hold_val)
+        hold_set
+    end
+
+    #Finally here I have all the best seat combinations for each value of 
+    # the number of tickets (had to force push 1, because I forgoot to)
+    # handle earlier and running out time to work on this. 
+    def all_best_seat_combinations
+        all_best = [[1,seat_point_chart[seat_point_chart.map{|x| x[2]}.each_with_index.max[1]]]]
+        for i in 2..availableSeats.length
+            all_best.push([i,best_seat_combination(i)])
+        end 
+        all_best
+    end
 end
