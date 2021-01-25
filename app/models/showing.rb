@@ -109,9 +109,12 @@ class Showing < ApplicationRecord
         col_off && row_off
     end
 
-    #now a function to determine the number of connections
+    
+    #define which seats actually touch eachother now that we know open seats
+    #and if can run a method to see if they touch. 
     def number_of_connections(array_of_seats)
         
+    
     end
 
     #now the function to run through all the permutations
