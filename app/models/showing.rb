@@ -113,16 +113,10 @@ class Showing < ApplicationRecord
 
     
     
-    #define which seats actually touch eachother now that we know open seats
-    #and if can run a method to see if they touch. 
-    def number_of_connections(array_of_seats)
-        
-    
-    end
+    #combinations of available seats by seat number
+    def seat_combinations_by_val(input_num)
+        return null unless input_num <= availableSeats.length
 
-    #now the function to run through all the permutations
-    def seat_permutations(number_of_seats)
-         
     end
 
     
