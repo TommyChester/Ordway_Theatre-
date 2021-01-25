@@ -1,4 +1,6 @@
 class Showing < ApplicationRecord
+
+    
     # Starting with, just going to allow any JSON, epending on time d
     # I will move to error throwing/validation etc on the wrong json
     # structure

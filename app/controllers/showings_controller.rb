@@ -10,6 +10,7 @@ class ShowingsController < ApplicationController
   # GET /showings/1
   # GET /showings/1.json
   def show
+    @showing = Showing.find(params[:id])
   end
 
   # GET /showings/new
