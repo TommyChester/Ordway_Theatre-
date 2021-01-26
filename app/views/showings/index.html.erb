@@ -17,7 +17,7 @@
       <tr>
         <td><%= showing.name %></td>
         <td><%= showing.type_of_show %></td>
-        <td><%= showing.availableSeats %></td>
+        <td><%= showing.availableSeats.map{|x| x[1]["id"]} %></td>
         <td><%= link_to 'Show', showing %></td>
         <td><%= link_to 'Edit', edit_showing_path(showing) %></td>
         <td><%= link_to 'Destroy', showing, method: :delete, data: { confirm: 'Are you sure?' } %></td>
