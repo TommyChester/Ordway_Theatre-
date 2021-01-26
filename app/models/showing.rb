@@ -172,17 +172,17 @@ class Showing < ApplicationRecord
             end
         end
         # just add the push to show the total value (might want it)
-        hold_set.push(hold_val)
-        hold_set
+        hold_set.map{|x| x[0]+x[1].to_s}
     end
 
     #Finally here I have all the best seat combinations for each value of 
     # the number of tickets (had to force push 1, because I forgoot to)
     # handle earlier and running out time to work on this. 
     def all_best_seat_combinations
-        all_best = [[1,seat_point_chart[seat_point_chart.map{|x| x[2]}.each_with_index.max[1]]]]
+        first=seat_point_chart[seat_point_chart.map{|x| x[2]}.each_with_index.max[1]]
+        all_best = [[first[0]+first[1].to_s]]
         for i in 2..availableSeats.length
-            all_best.push([i,best_seat_combination(i)])
+            all_best.push(best_seat_combination(i))
         end 
         all_best
     end

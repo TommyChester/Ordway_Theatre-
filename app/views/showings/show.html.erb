@@ -15,14 +15,21 @@
   <%= @showing.availableSeats.to_a.map{|x| x[1]["id"]}%>
 </p>
 
-
-<tbody>
+<table>
+  <thead>
+    <tr>
+      <td>Number of Tickets</td>
+      <td>Best Seat Collection</td>
+    </tr>
+  </thead>
+  <tbody>
     <% @showing.all_best_seat_combinations.each do |seat| %>
       <tr>
-        <td><%= seat[0] %></td>
-        <td><%= seat[1] %></td>
+        <td><%= seat.length %></td>
+        <td><%= seat%></td>
       </tr>
     <% end %>
   </tbody>
+</table>
 <%= link_to 'Edit', edit_showing_path(@showing) %> |
 <%= link_to 'Back', showings_path %>
